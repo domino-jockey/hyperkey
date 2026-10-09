@@ -48,12 +48,12 @@ You plan to hide the icon using macOS's own System Settings → Menu Bar (the "d
 
 To read and change keypresses system-wide, macOS requires the user to grant permission.
 
-- [ ] Check whether **Accessibility** permission is granted (`AXIsProcessTrusted()`)
-- [ ] If it isn't, show a friendly screen in Settings explaining why it's needed, with a button that opens the right System Settings pane
-- [ ] Detect when permission gets granted so the user doesn't have to restart the app (check again every so often, or whenever the window becomes active)
-- [ ] Show the permission status in Settings (granted / not granted)
+- [x] Check whether **Accessibility** permission is granted (`AXIsProcessTrusted()`)
+- [x] If it isn't, show a friendly screen in Settings explaining why it's needed, with a button that opens the right System Settings pane
+- [x] Detect when permission gets granted so the user doesn't have to restart the app (check again every so often, or whenever the window becomes active)
+- [x] Show the permission status in Settings (granted / not granted)
 
-> Note: while you're developing, every rebuild can make macOS "forget" the permission because the app's signature changes. Signing with your Apple ID ("Development" signing in Xcode) mostly fixes this. If it still happens, remove Hyperkey from the Accessibility list and add it again.
+- [x] Stable code signing: builds are signed with a self-made **"Hyperkey Local"** certificate in the login keychain, so macOS keeps the permission across rebuilds. (Ad-hoc signing gave every build a new identity, and macOS forgot the permission each time.) To undo: delete "Hyperkey Local" in Keychain Access.
 
 **✅ Done when:** A fresh install asks for permission, and after you grant it the app notices without a restart.
 
