@@ -63,20 +63,20 @@ To read and change keypresses system-wide, macOS requires the user to grant perm
 
 How it works: the app installs an **event tap**, a hook that sees every keyboard event before other apps do and can change or block it.
 
-- [ ] Create a `HyperKeyEngine` (one Swift file) that installs a `CGEventTap` for `keyDown`, `keyUp` and `flagsChanged` events
+- [x] Create a `HyperKeyEngine` (one Swift file) that installs a `CGEventTap` for `keyDown`, `keyUp` and `flagsChanged` events
   - "flagsChanged" is the event macOS sends when a modifier key (⌘, ⌥, ⌃, ⇧, fn) goes down or up
-- [ ] Detect **Right ⌘** specifically, as opposed to Left ⌘ (key code `54`, or the device-specific right-command flag)
-- [ ] While Right ⌘ is held: add ⌘⌥⌃⇧ to every key event's modifier flags
-- [ ] When Right ⌘ is released: stop adding them, and make sure no modifier stays "stuck"
-- [ ] Left ⌘ must keep working exactly as normal
-- [ ] Handle the tap getting disabled: macOS turns off taps that respond too slowly. Watch for `tapDisabledByTimeout` and turn it back on.
-- [ ] Add an on/off toggle (a menu bar item and a Settings switch)
+- [x] Detect **Right ⌘** specifically, as opposed to Left ⌘ (using the device-specific right-command flag `0x10` that every key event carries, so no "held" state is stored and nothing can get stuck)
+- [x] While Right ⌘ is held: add ⌘⌥⌃⇧ to every key event's modifier flags
+- [x] When Right ⌘ is released: stop adding them, and make sure no modifier stays "stuck"
+- [x] Left ⌘ must keep working exactly as normal
+- [x] Handle the tap getting disabled: macOS turns off taps that respond too slowly. Watch for `tapDisabledByTimeout` and turn it back on.
+- [x] Add an on/off toggle (a menu bar item and a Settings switch)
 
 **Test:**
-- [ ] Right ⌘ + key in a key-viewer app (or a shortcut-recording field) shows ⌃⌥⇧⌘ + key
-- [ ] Left ⌘ + C / V still copy and paste normally
-- [ ] Holding and releasing Right ⌘ quickly many times never leaves a modifier stuck
-- [ ] Still works after sleep/wake
+- [x] Right ⌘ + key in a key-viewer app (or a shortcut-recording field) shows ⌃⌥⇧⌘ + key
+- [x] Left ⌘ + C / V still copy and paste normally
+- [x] Holding and releasing Right ⌘ quickly many times never leaves a modifier stuck
+- [ ] Still works after sleep/wake (not tested yet)
 
 **✅ Done when:** Every test above passes.
 

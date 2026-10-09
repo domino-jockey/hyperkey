@@ -2,9 +2,18 @@ import SwiftUI
 
 struct SettingsView: View {
     private let permission = AccessibilityPermission.shared
+    @Bindable private var engine = HyperKeyEngine.shared
 
     var body: some View {
         Form {
+            Section {
+                Toggle("Enable Hyper Key", isOn: $engine.isEnabled)
+            } header: {
+                Text("Hyper Key")
+            } footer: {
+                Text("Hold Right ⌘ to press ⌃⌥⇧⌘ all at once.")
+                    .foregroundStyle(.secondary)
+            }
             Section {
                 LabeledContent("Accessibility") {
                     if permission.isGranted {
@@ -28,6 +37,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 260)
+        .frame(width: 420, height: 320)
     }
 }
