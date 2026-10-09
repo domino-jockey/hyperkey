@@ -2,30 +2,27 @@ import SwiftUI
 
 @main
 struct HyperkeyApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     var body: some Scene {
         MenuBarExtra("Hyperkey", systemImage: "command") {
-            MenuContent()
-        }
-        Settings {
-            SettingsView()
+            Button("Settings…") {
+                SettingsWindow.show()
+            }
+            .keyboardShortcut(",")
+            Divider()
+            Button("Quit Hyperkey") {
+                NSApp.terminate(nil)
+            }
+            .keyboardShortcut("q")
         }
     }
 }
 
-struct MenuContent: View {
-    @Environment(\.openSettings) private var openSettings
-
-    var body: some View {
-        Button("Settings…") {
-            // Agent apps (no Dock icon) don't come to the front on their own.
-            NSApp.activate()
-            openSettings()
-        }
-        .keyboardShortcut(",")
-        Divider()
-        Button("Quit Hyperkey") {
-            NSApp.terminate(nil)
-        }
-        .keyboardShortcut("q")
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    // Called when Hyperkey is opened again (Spotlight, Finder) while already running.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        SettingsWindow.show()
+        return true
     }
 }

@@ -36,8 +36,8 @@ Each phase ends with a **✅ Done when** check. Don't move on until it passes.
 
 You plan to hide the icon using macOS's own System Settings → Menu Bar (the "don't allow in menu bar" toggle). Once it's hidden, the app still needs a way to get back to Settings.
 
-- [ ] Handle "app reopened": opening Hyperkey again (Spotlight, Finder, Launchpad) while it's already running should open the Settings window. In code, that's `applicationShouldHandleReopen` in an `NSApplicationDelegate`.
-- [ ] Make sure the Settings window comes to the front when opened (agent apps don't do this automatically, so call `NSApp.activate()`)
+- [x] Handle "app reopened": opening Hyperkey again (Spotlight, Finder, Launchpad) while it's already running should open the Settings window. In code, that's `applicationShouldHandleReopen` in an `NSApplicationDelegate`.
+- [x] Make sure the Settings window comes to the front when opened (agent apps don't do this automatically, so call `NSApp.activate()`, plus `orderFrontRegardless()` for when macOS refuses to switch apps, e.g. launched from Terminal)
 - [ ] Later (Phase 6): optionally add a Hyper shortcut that opens Settings, e.g. Hyper + `,`
 
 **✅ Done when:** With the menu bar icon hidden in System Settings, opening Hyperkey from Spotlight brings up the Settings window.
