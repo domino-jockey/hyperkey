@@ -1,0 +1,23 @@
+name: Hyperkey
+options:
+  bundleIdPrefix: com.jammyjellyfish
+  deploymentTarget:
+    macOS: "27.0"
+targets:
+  Hyperkey:
+    type: application
+    platform: macOS
+    sources: [Hyperkey]
+    info:
+      path: Hyperkey/Info.plist
+      properties:
+        CFBundleDisplayName: Hyperkey
+        LSUIElement: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jammyjellyfish.Hyperkey
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: 6.0
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_APP_SANDBOX: NO
