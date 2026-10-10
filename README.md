@@ -25,7 +25,7 @@ Turn on **Open at Login** in Hyperkey Settings.
 Requires Xcode, [XcodeGen](https://github.com/yonaskolb/XcodeGen), and a code-signing certificate named **Hyperkey Local** in the login keychain (a stable signature lets macOS remember the Accessibility permission across builds).
 
 ```sh
-xcodegen
-xcodebuild -project Hyperkey.xcodeproj -scheme Hyperkey -configuration Release -derivedDataPath build build
-ditto build/Build/Products/Release/Hyperkey.app /Applications/Hyperkey.app
+make run      # build a test version and open it
+make install  # build the real version and put it in /Applications
+make clean    # delete everything that building creates
 ```
