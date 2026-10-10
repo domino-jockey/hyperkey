@@ -84,10 +84,10 @@ How it works: the app installs an **event tap**, a hook that sees every keyboard
 
 ## Phase 5 — Configurable trigger key
 
-- [ ] Let the user choose which key acts as Hyper. Start with a dropdown: Right ⌘, Right ⌥, Right ⌃, Caps Lock, Right ⇧
-- [ ] Save the choice (`UserDefaults`, macOS's simple built-in storage for settings)
-- [ ] The engine picks up the change right away, without a restart
-- [ ] Caps Lock needs special handling: it toggles on/off instead of being held. Leave it for last, or skip it in v1.
+- [x] Let the user choose which key acts as Hyper, from a dropdown: Right ⌘, Right ⌥, Right ⇧ (no Right ⌃, because this keyboard doesn't have one)
+- [x] Save the choice (`UserDefaults`, macOS's simple built-in storage for settings)
+- [x] The engine picks up the change right away, without a restart
+- [x] ~~Caps Lock~~: skipped, because Caps Lock is already remapped to Esc
 
 **✅ Done when:** Switching the trigger in Settings takes effect immediately, and the old key goes back to normal.
 

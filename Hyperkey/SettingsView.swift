@@ -8,10 +8,15 @@ struct SettingsView: View {
         Form {
             Section {
                 Toggle("Enable Hyper Key", isOn: $engine.isEnabled)
+                Picker("Hyper key", selection: $engine.trigger) {
+                    ForEach(TriggerKey.allCases) { key in
+                        Text(key.name).tag(key)
+                    }
+                }
             } header: {
                 Text("Hyper Key")
             } footer: {
-                Text("Hold Right ⌘ to press ⌃⌥⇧⌘ all at once.")
+                Text("Hold \(engine.trigger.name) to press ⌃⌥⇧⌘ all at once.")
                     .foregroundStyle(.secondary)
             }
             Section {
@@ -37,6 +42,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 320)
+        .frame(width: 420, height: 360)
     }
 }

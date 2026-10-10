@@ -2,7 +2,7 @@ import CoreGraphics
 import Foundation
 import Observation
 
-/// Turns Right ⌘ into a "Hyper" key: while it's held, key events are sent with
+/// Turns the trigger key (Right ⌘ by default) into a "Hyper" key: while it's held, key events are sent with
 /// ⌃⌥⇧⌘ instead. Uses an event tap, a hook that sees (and can change) keyboard
 /// events before apps do.
 @MainActor
@@ -17,13 +17,22 @@ final class HyperKeyEngine {
         }
     }
 
-    /// The event callback is a plain C function, so it reads the tap from here.
+    var trigger = TriggerKey(rawValue: UserDefaults.standard.string(forKey: "triggerKey") ?? "") ?? .rightCommand {
+        didSet {
+            UserDefaults.standard.set(trigger.rawValue, forKey: "triggerKey")
+            Self.triggerFlag = trigger.deviceFlag
+        }
+    }
+
+    /// The event callback is a plain C function, so it reads the tap and trigger from here.
     nonisolated(unsafe) fileprivate static var tap: CFMachPort?
+    nonisolated(unsafe) fileprivate static var triggerFlag: UInt64 = 0
 
     private let permission = AccessibilityPermission.shared
     private var runLoopSource: CFRunLoopSource?
 
     private init() {
+        Self.triggerFlag = trigger.deviceFlag
         observePermission()
     }
 
@@ -75,8 +84,6 @@ final class HyperKeyEngine {
     }
 }
 
-/// Set in an event's flags while Right ⌘ is physically held (NX_DEVICERCMDKEYMASK).
-private let rightCommandFlag: UInt64 = 0x10
 private let hyperFlags: CGEventFlags = [.maskCommand, .maskAlternate, .maskControl, .maskShift]
 
 private func handleEvent(
@@ -94,7 +101,7 @@ private func handleEvent(
     case .keyDown, .keyUp, .flagsChanged:
         // Each event carries the real modifier state, so no "is Hyper held" state is kept,
         // and nothing can get stuck.
-        if event.flags.rawValue & rightCommandFlag != 0 {
+        if event.flags.rawValue & HyperKeyEngine.triggerFlag != 0 {
             event.flags.formUnion(hyperFlags)
         }
     default:
