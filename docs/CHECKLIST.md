@@ -110,7 +110,8 @@ Opening apps and other actions (the original Phases 6–9) are dropped: the Shor
 - [x] Check CPU usage while idle: 0.0% CPU, about 20 MB of memory
 - [x] Build a release version and copy `Hyperkey.app` to `/Applications`
 - [x] Write a short `README.md`: what it does, permissions, the on/off shortcut, how to hide the menu bar icon, start at login
-- [ ] Add Hyperkey to Login Items (System Settings → General → Login Items), then reboot and check it starts and works
+- [x] "Open at Login" toggle in Settings (`SMAppService.mainApp`, Apple's login-item API)
+- [ ] Turn it on, reboot, and check Hyperkey starts and works
 - [x] ~~Fresh user account test, notarizing~~: skipped, since this is a personal app
 
 **✅ Done when:** The release build in `/Applications` works for daily use.

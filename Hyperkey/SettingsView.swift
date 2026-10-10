@@ -1,13 +1,21 @@
+import ServiceManagement
 import SwiftUI
 
 struct SettingsView: View {
     private let permission = AccessibilityPermission.shared
     @Bindable private var engine = HyperKeyEngine.shared
+    @State private var opensAtLogin = SMAppService.mainApp.status == .enabled
 
     var body: some View {
         Form {
             Section {
                 Toggle("Enable Hyper Key", isOn: $engine.isEnabled)
+                Toggle("Open at Login", isOn: $opensAtLogin)
+                    .onChange(of: opensAtLogin) { _, open in
+                        try? open ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister()
+                        // Show what macOS actually did (it can refuse, or need approval in System Settings).
+                        opensAtLogin = SMAppService.mainApp.status == .enabled
+                    }
                 Picker("Hyper key", selection: $engine.trigger) {
                     ForEach(TriggerKey.allCases) { key in
                         Text(key.name).tag(key)
@@ -42,6 +50,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 360)
+        .frame(width: 420, height: 400)
     }
 }

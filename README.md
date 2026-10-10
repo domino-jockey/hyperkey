@@ -18,7 +18,7 @@ System Settings → Menu Bar, then turn Hyperkey off. To get back to Settings, o
 
 ## Start at login
 
-System Settings → General → Login Items, then add Hyperkey under "Open at Login".
+Turn on **Open at Login** in Hyperkey Settings.
 
 ## Build
 
