@@ -38,7 +38,7 @@ You plan to hide the icon using macOS's own System Settings → Menu Bar (the "d
 
 - [x] Handle "app reopened": opening Hyperkey again (Spotlight, Finder, Launchpad) while it's already running should open the Settings window. In code, that's `applicationShouldHandleReopen` in an `NSApplicationDelegate`.
 - [x] Make sure the Settings window comes to the front when opened (agent apps don't do this automatically, so call `NSApp.activate()`, plus `orderFrontRegardless()` for when macOS refuses to switch apps, e.g. launched from Terminal)
-- [ ] Later (Phase 6): optionally add a Hyper shortcut that opens Settings, e.g. Hyper + `,`
+- [x] ~~Hyper shortcut to open Settings~~: dropped, since reopening from Spotlight already does it
 
 **✅ Done when:** With the menu bar icon hidden in System Settings, opening Hyperkey from Spotlight brings up the Settings window.
 
@@ -93,96 +93,24 @@ How it works: the app installs an **event tap**, a hook that sees every keyboard
 
 ---
 
-## Phase 6 — Shortcuts: opening apps
+## Phase 6 — Emergency on/off shortcut
 
-- [ ] Define a `Shortcut` data model: trigger key + extra modifiers (e.g. fn) + action
-- [ ] Define an `Action` type that starts with `openApp(bundleID)`
-- [ ] Save shortcuts as JSON (a simple text format for structured data) in `UserDefaults` or a file in Application Support
-- [ ] In the engine: when Hyper + a bound key is pressed, **run the action and swallow the keypress** so other apps don't also receive it
-- [ ] Unbound Hyper + key combos pass through as ⌃⌥⇧⌘ + key, so other apps (Raycast, etc.) can still use them
-- [ ] Open apps with `NSWorkspace.shared.openApplication(at:configuration:)`
-- [ ] Behavior if the app is already in front: decide between doing nothing and hiding it. **Decide:** ☐ nothing ☐ hide (toggle)
-- [ ] Add starter shortcuts:
-  - [ ] Hyper + G → Ghostty
-  - [ ] Hyper + O → Obsidian
+Opening apps and other actions (the original Phases 6–9) are dropped: the Shortcuts app already does that, using Hyper key combos. Appearance (the original Phase 10) is dropped too: the built-in look is good enough, and the menu bar icon stays hidden.
 
-**✅ Done when:** Hyper + G opens or focuses Ghostty, Hyper + O opens or focuses Obsidian, and nothing else reacts to those keypresses.
+- [x] Trigger + Esc switches Hyper on or off, and the keypress is swallowed so no app sees it
+- [x] The event tap keeps running while Hyper is off, so the shortcut can switch it back on
+- [x] Holding the combo down doesn't toggle it over and over (key repeats are ignored)
+
+**✅ Done when:** Trigger + Esc turns Hyper off and back on, and the toggle in Settings follows along.
 
 ---
 
-## Phase 7 — Shortcuts settings UI
+## Phase 7 — Polish & ship to yourself
 
-- [ ] A list of shortcuts in Settings (key combo on one side, action on the other)
-- [ ] Add / edit / delete a shortcut
-- [ ] **Key recorder:** click a field, press the key, and it records the combo
-- [ ] **App picker:** choose an app from `/Applications` (a file picker, or a searchable list with app icons)
-- [ ] Warn when two shortcuts use the same combo
-- [ ] Changes take effect immediately
-
-**✅ Done when:** You can create Hyper + S → Safari entirely from the UI, and it works right away.
-
----
-
-## Phase 8 — More actions
-
-- [ ] Extend `Action` with more types. Start with a few you'd actually use; candidates:
-  - [ ] **Shut down** (and/or Restart, Sleep, Lock screen)
-  - [ ] Open a URL or a folder
-  - [ ] Run a shell script / terminal command
-  - [ ] Run a Shortcut from Apple's Shortcuts app
-- [ ] **Quick shutdown on fn + Hyper + Q:**
-  - [ ] Detect fn being held (the "secondary fn" modifier flag) together with Hyper
-  - [ ] Ask "Shut down now?" before shutting down, or not? **Decide:** ☐ confirm ☐ instant
-  - [ ] Shut down via AppleScript (`tell application "System Events" to shut down`). The first time, macOS will ask for **Automation** permission.
-- [ ] Each action type gets its own editor in the shortcuts UI
-
-**✅ Done when:** fn + Hyper + Q shuts down (after confirmation, if chosen), and Hyper + Q alone does **not**.
-
----
-
-## Phase 9 — General settings
-
-- [ ] **Launch at login** toggle (`SMAppService.mainApp`, Apple's modern login-item API)
-- [ ] Enable / disable Hyperkey toggle
-- [ ] Permission status (from Phase 3)
-- [ ] About section: version, and a "how to hide the menu bar icon" hint (System Settings → Menu Bar)
-- [ ] Optional: export / import shortcuts as a file (backup)
-
-**✅ Done when:** After a reboot, Hyperkey starts on its own and all shortcuts work.
-
----
-
-## Phase 10 — Appearance & design (to be discussed)
-
-Goal: feels native, has its own identity (not a copy of other hyperkey apps), and is consistent throughout.
-
-- [ ] Design discussion: overall vibe, accent color, layout of the Settings window
-- [ ] Settings layout: sidebar or tabs (General / Shortcuts / About)
-- [ ] Use standard macOS controls (`Form`, `Toggle`, `Picker`) so it matches the system
-- [ ] One accent color, one icon style, consistent spacing and wording everywhere
-- [ ] Supports light and dark mode
-- [ ] Custom app icon + menu bar icon
-- [ ] Empty states (e.g. "No shortcuts yet — add one") and clear error messages
-
-**✅ Done when:** Every screen follows the same style rules, and it looks right in both light and dark mode.
-
----
-
-## Phase 11 — Polish & ship to yourself
-
-- [ ] Test the full flow on a fresh user account: install → permission → set up shortcuts → reboot
-- [ ] Check CPU usage while idle (it should be near 0%)
-- [ ] Archive a release build in Xcode (Product → Archive) and copy `Hyperkey.app` to `/Applications`
-- [ ] Optional: notarize it (Apple's malware check, needed if you share the app with others)
-- [ ] Write a short `README.md`: what it does, permissions, how to hide the menu bar icon
+- [x] Check CPU usage while idle: 0.0% CPU, about 20 MB of memory
+- [x] Build a release version and copy `Hyperkey.app` to `/Applications`
+- [x] Write a short `README.md`: what it does, permissions, the on/off shortcut, how to hide the menu bar icon, start at login
+- [ ] Add Hyperkey to Login Items (System Settings → General → Login Items), then reboot and check it starts and works
+- [x] ~~Fresh user account test, notarizing~~: skipped, since this is a personal app
 
 **✅ Done when:** The release build in `/Applications` works for daily use.
-
----
-
-## Later / ideas
-
-- [ ] Per-app shortcuts (a combo that only applies in a specific app)
-- [ ] Window management (Hyper + arrows to snap windows left/right)
-- [ ] A small on-screen overlay listing your shortcuts while Hyper is held
-- [ ] Tap the Hyper key alone to send another key, e.g. tap Right ⌘ = Escape
