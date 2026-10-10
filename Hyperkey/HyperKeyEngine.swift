@@ -13,7 +13,7 @@ final class HyperKeyEngine {
     var isEnabled = UserDefaults.standard.object(forKey: "hyperKeyEnabled") as? Bool ?? true {
         didSet {
             UserDefaults.standard.set(isEnabled, forKey: "hyperKeyEnabled")
-            update()
+            Self.hyperEnabled = isEnabled
         }
     }
 
@@ -24,21 +24,24 @@ final class HyperKeyEngine {
         }
     }
 
-    /// The event callback is a plain C function, so it reads the tap and trigger from here.
+    /// The event callback is a plain C function, so it reads the tap and settings from here.
     nonisolated(unsafe) fileprivate static var tap: CFMachPort?
     nonisolated(unsafe) fileprivate static var triggerFlag: UInt64 = 0
+    nonisolated(unsafe) fileprivate static var hyperEnabled = true
 
     private let permission = AccessibilityPermission.shared
     private var runLoopSource: CFRunLoopSource?
 
     private init() {
         Self.triggerFlag = trigger.deviceFlag
+        Self.hyperEnabled = isEnabled
         observePermission()
     }
 
-    /// Starts or stops the event tap to match `isEnabled` and the permission.
+    /// Starts or stops the event tap to match the permission. The tap keeps running while
+    /// Hyper is switched off, so trigger + Esc can switch it back on.
     func update() {
-        let shouldRun = isEnabled && permission.isGranted
+        let shouldRun = permission.isGranted
         if shouldRun && Self.tap == nil {
             start()
         } else if !shouldRun && Self.tap != nil {
@@ -85,6 +88,7 @@ final class HyperKeyEngine {
 }
 
 private let hyperFlags: CGEventFlags = [.maskCommand, .maskAlternate, .maskControl, .maskShift]
+private let escapeKeyCode: Int64 = 53
 
 private func handleEvent(
     proxy: CGEventTapProxy,
@@ -101,7 +105,17 @@ private func handleEvent(
     case .keyDown, .keyUp, .flagsChanged:
         // Each event carries the real modifier state, so no "is Hyper held" state is kept,
         // and nothing can get stuck.
-        if event.flags.rawValue & HyperKeyEngine.triggerFlag != 0 {
+        let triggerHeld = event.flags.rawValue & HyperKeyEngine.triggerFlag != 0
+        // Trigger + Esc switches Hyper on or off, and no app sees the keypress.
+        if triggerHeld && type != .flagsChanged
+            && event.getIntegerValueField(.keyboardEventKeycode) == escapeKeyCode {
+            if type == .keyDown && event.getIntegerValueField(.keyboardEventAutorepeat) == 0 {
+                // The tap runs on the main run loop, so this is already the main thread.
+                MainActor.assumeIsolated { HyperKeyEngine.shared.isEnabled.toggle() }
+            }
+            return nil
+        }
+        if triggerHeld && HyperKeyEngine.hyperEnabled {
             event.flags.formUnion(hyperFlags)
         }
     default:

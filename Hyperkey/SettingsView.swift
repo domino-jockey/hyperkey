@@ -16,7 +16,7 @@ struct SettingsView: View {
             } header: {
                 Text("Hyper Key")
             } footer: {
-                Text("Hold \(engine.trigger.name) to press ⌃⌥⇧⌘ all at once.")
+                Text("Hold \(engine.trigger.name) to press ⌃⌥⇧⌘ all at once. Press \(engine.trigger.name) + Esc to switch it on or off.")
                     .foregroundStyle(.secondary)
             }
             Section {
