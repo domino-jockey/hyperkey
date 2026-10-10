@@ -19,7 +19,7 @@ Each phase ends with a **✅ Done when** check. Don't move on until it passes.
 
 ## Phase 1 — Project skeleton
 
-- [x] Describe the Xcode project in `project.yml` and generate `Hyperkey.xcodeproj` with **XcodeGen** (a tool that builds the Xcode project file from a short readable text file). After changing `project.yml` or adding files, run `xcodegen` again.
+- [x] Describe the Xcode project in `project.yaml` and generate `Hyperkey.xcodeproj` with **XcodeGen** (a tool that builds the Xcode project file from a short readable text file). After changing `project.yaml` or adding files, run `xcodegen --spec project.yaml` again (XcodeGen only finds `project.yml` on its own).
 - [x] Turn **off** App Sandbox (`ENABLE_APP_SANDBOX: NO`)
 - [x] Hide the Dock icon (`LSUIElement` = `YES`)
 - [x] Replace the default window with a `MenuBarExtra` (the SwiftUI way to put an icon in the menu bar), with:
