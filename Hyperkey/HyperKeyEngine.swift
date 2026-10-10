@@ -17,6 +17,10 @@ final class HyperKeyEngine {
         }
     }
 
+    var notifiesOnShortcut = UserDefaults.standard.object(forKey: "notifiesOnShortcut") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(notifiesOnShortcut, forKey: "notifiesOnShortcut") }
+    }
+
     var trigger = TriggerKey(rawValue: UserDefaults.standard.string(forKey: "triggerKey") ?? "") ?? .rightCommand {
         didSet {
             UserDefaults.standard.set(trigger.rawValue, forKey: "triggerKey")
@@ -111,7 +115,13 @@ private func handleEvent(
             && event.getIntegerValueField(.keyboardEventKeycode) == escapeKeyCode {
             if type == .keyDown && event.getIntegerValueField(.keyboardEventAutorepeat) == 0 {
                 // The tap runs on the main run loop, so this is already the main thread.
-                MainActor.assumeIsolated { HyperKeyEngine.shared.isEnabled.toggle() }
+                MainActor.assumeIsolated {
+                    let engine = HyperKeyEngine.shared
+                    engine.isEnabled.toggle()
+                    if engine.notifiesOnShortcut {
+                        StateNotification.show(enabled: engine.isEnabled)
+                    }
+                }
             }
             return nil
         }

@@ -21,6 +21,7 @@ struct SettingsView: View {
                         Text(key.name).tag(key)
                     }
                 }
+                Toggle("Notify When Switched with Esc", isOn: $engine.notifiesOnShortcut)
             } header: {
                 Text("Hyper Key")
             } footer: {
@@ -50,6 +51,6 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 400)
+        .frame(width: 420, height: 440)
     }
 }

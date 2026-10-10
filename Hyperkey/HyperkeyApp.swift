@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 @main
 struct HyperkeyApp: App {
@@ -36,9 +37,19 @@ struct HyperkeyApp: App {
     }
 }
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        UNUserNotificationCenter.current().delegate = self
         HyperKeyEngine.shared.update()
+    }
+
+    // macOS hides notifications from the app you're using, which is Hyperkey while
+    // Settings is open. This shows them anyway.
+    nonisolated func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        [.banner]
     }
 
     // Called when Hyperkey is opened again (Spotlight, Finder) while already running.
