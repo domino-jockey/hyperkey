@@ -28,7 +28,7 @@ project.yml ──xcodegen──▶ Hyperkey.xcodeproj ──xcodebuild──▶
 
 | Command        | What it does                                                                       |
 |----------------|------------------------------------------------------------------------------------|
-| `make run`     | Builds a **Debug** (test) version and opens it                                    |
+| `make run`     | Builds a **Debug** (test) version and opens it                                     |
 | `make install` | Builds a **Release** (finished) version, copies it to `/Applications` and opens it |
 | `make clean`   | Deletes `build/` and `Hyperkey.xcodeproj`. Both come back on the next build.       |
 
