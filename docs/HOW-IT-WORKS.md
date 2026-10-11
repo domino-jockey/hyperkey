@@ -46,7 +46,8 @@ project.yml ──xcodegen──▶ Hyperkey.xcodeproj ──xcodebuild──▶
 | `Hyperkey/HyperkeyApp.swift`             | **Starting point.** Creates the menu bar menu and runs setup when the app launches.    |
 | `Hyperkey/HyperKeyEngine.swift`          | **The core.** Watches every keypress and adds ⌃⌥⇧⌘ while the trigger key is held.      |
 | `Hyperkey/TriggerKey.swift`              | The list of keys you can pick as the trigger (Right ⌘ / ⌥ / ⇧).                        |
-| `Hyperkey/SettingsView.swift`            | What the Settings window shows: switches, the trigger picker, permission status.       |
+| `Hyperkey/AppShortcut.swift`             | One "Hyper + key opens this app" shortcut, and the keys you can pick for it.           |
+| `Hyperkey/SettingsView.swift`            | What the Settings window shows: switches, trigger picker, app shortcuts, permission.   |
 | `Hyperkey/SettingsWindow.swift`          | Opens the Settings window and brings it to the front.                                  |
 | `Hyperkey/AccessibilityPermission.swift` | Checks whether macOS has given the app permission to see keypresses.                   |
 | `Hyperkey/Info.plist`                    | Basic facts macOS reads about the app (name, version, "this is a menu bar app").       |
@@ -97,7 +98,7 @@ Hyperkey turns the tap back on whenever macOS switches it off (macOS does that t
 | `@Bindable`, `$engine.isEnabled` | Connects a switch on screen to a value, in both directions.                                                       |
 | `@State`                         | A value that belongs to one piece of the screen, like the Open at Login switch.                                   |
 | `didSet { … }`                   | Code that runs every time a value changes. Hyperkey uses it to save settings.                                     |
-| `UserDefaults`                   | macOS's simple storage for settings. Hyperkey saves `hyperKeyEnabled` and `triggerKey` there.                     |
+| `UserDefaults`                   | macOS's simple storage for settings. Hyperkey saves `hyperKeyEnabled`, `triggerKey` and `appShortcuts` there.     |
 | `@MainActor`                     | "Only run this on the main thread," the one that also draws the screen. This keeps things from clashing.          |
 | `nonisolated(unsafe) static var` | A value the keyboard hook can read directly. The hook is plain C-style code and can't reach normal Swift objects. |
 | `guard … else { return }`        | "If this isn't true, stop here."                                                                                  |

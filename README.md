@@ -7,6 +7,7 @@ A small macOS menu bar app that turns one key into a "Hyper" key. While you hold
 - **Hold Right ⌘** (or Right ⌥ / Right ⇧, chosen in Settings) to press ⌃⌥⇧⌘.
 - **Trigger + Esc** switches Hyper on or off, in case something goes wrong. It also works with Caps Lock remapped to Esc.
 - Left ⌘ keeps working as normal.
+- **App shortcuts:** in Settings → App Shortcuts, give an app a letter or number. Trigger + that key opens the app (e.g. Right ⌘ + O for Obsidian).
 
 ## Permission
 

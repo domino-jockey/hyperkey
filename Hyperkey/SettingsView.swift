@@ -1,5 +1,6 @@
 import ServiceManagement
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
     private let permission = AccessibilityPermission.shared
@@ -29,6 +30,34 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
             Section {
+                ForEach($engine.appShortcuts) { $shortcut in
+                    HStack {
+                        Image(nsImage: NSWorkspace.shared.icon(forFile: shortcut.appURL.path))
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                        Text(shortcut.appName)
+                        Spacer()
+                        Picker("Key", selection: $shortcut.key) {
+                            ForEach(AppShortcut.keys, id: \.self) { Text($0) }
+                        }
+                        .labelsHidden()
+                        .fixedSize()
+                        Button("Remove", systemImage: "minus.circle.fill") {
+                            engine.appShortcuts.removeAll { $0.id == shortcut.id }
+                        }
+                        .labelStyle(.iconOnly)
+                        .buttonStyle(.borderless)
+                        .foregroundStyle(.red)
+                    }
+                }
+                Button("Add App…", action: addApp)
+            } header: {
+                Text("App Shortcuts")
+            } footer: {
+                Text("Press \(engine.trigger.name) + a key to open its app.")
+                    .foregroundStyle(.secondary)
+            }
+            Section {
                 LabeledContent("Accessibility") {
                     if permission.isGranted {
                         Label("Granted", systemImage: "checkmark.circle.fill")
@@ -51,6 +80,21 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 440)
+        .frame(width: 420, height: 600)
+    }
+
+    /// Asks for an app, then gives it its first letter as the key (or the first free key if that's taken).
+    private func addApp() {
+        let panel = NSOpenPanel()
+        panel.directoryURL = URL(fileURLWithPath: "/Applications")
+        panel.allowedContentTypes = [.application]
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let used = Set(engine.appShortcuts.map(\.key))
+        let firstLetter = url.lastPathComponent.prefix(1).uppercased()
+        let key = [firstLetter] + AppShortcut.keys
+        engine.appShortcuts.append(AppShortcut(
+            key: key.first { AppShortcut.keyCodes[$0] != nil && !used.contains($0) } ?? "A",
+            appURL: url
+        ))
     }
 }

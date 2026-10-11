@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import Foundation
 import Observation
@@ -28,10 +29,19 @@ final class HyperKeyEngine {
         }
     }
 
+    var appShortcuts: [AppShortcut] = (UserDefaults.standard.data(forKey: "appShortcuts"))
+        .flatMap { try? JSONDecoder().decode([AppShortcut].self, from: $0) } ?? [] {
+        didSet {
+            UserDefaults.standard.set(try? JSONEncoder().encode(appShortcuts), forKey: "appShortcuts")
+            Self.appsByKeyCode = Self.lookup(appShortcuts)
+        }
+    }
+
     /// The event callback is a plain C function, so it reads the tap and settings from here.
     nonisolated(unsafe) fileprivate static var tap: CFMachPort?
     nonisolated(unsafe) fileprivate static var triggerFlag: UInt64 = 0
     nonisolated(unsafe) fileprivate static var hyperEnabled = true
+    nonisolated(unsafe) fileprivate static var appsByKeyCode: [Int64: URL] = [:]
 
     private let permission = AccessibilityPermission.shared
     private var runLoopSource: CFRunLoopSource?
@@ -39,6 +49,7 @@ final class HyperKeyEngine {
     private init() {
         Self.triggerFlag = trigger.deviceFlag
         Self.hyperEnabled = isEnabled
+        Self.appsByKeyCode = Self.lookup(appShortcuts)
         observePermission()
     }
 
@@ -76,6 +87,15 @@ final class HyperKeyEngine {
         CFMachPortInvalidate(tap)
         Self.tap = nil
         runLoopSource = nil
+    }
+
+    /// If two shortcuts use the same key, the first one wins.
+    private static func lookup(_ shortcuts: [AppShortcut]) -> [Int64: URL] {
+        shortcuts.reduce(into: [:]) { result, shortcut in
+            if let code = AppShortcut.keyCodes[shortcut.key], result[code] == nil {
+                result[code] = shortcut.appURL
+            }
+        }
     }
 
     /// Re-runs `update()` whenever the Accessibility permission changes.
@@ -122,6 +142,14 @@ private func handleEvent(
                         StateNotification.show(enabled: engine.isEnabled)
                     }
                 }
+            }
+            return nil
+        }
+        // Hyper + a key with an app assigned opens that app, and no app sees the keypress.
+        if triggerHeld && HyperKeyEngine.hyperEnabled && type != .flagsChanged,
+           let appURL = HyperKeyEngine.appsByKeyCode[event.getIntegerValueField(.keyboardEventKeycode)] {
+            if type == .keyDown && event.getIntegerValueField(.keyboardEventAutorepeat) == 0 {
+                NSWorkspace.shared.openApplication(at: appURL, configuration: .init())
             }
             return nil
         }
